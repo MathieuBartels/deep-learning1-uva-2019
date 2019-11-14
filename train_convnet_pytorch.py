@@ -126,14 +126,14 @@ def train():
 
         del out, images, labels
 
-        # images, labels = train.next_batch(5000)
-        # images = torch.from_numpy(images).cuda()
-        # labels = torch.from_numpy(labels).long().cuda()
+        train_images, labels = train.next_batch(5000)
+        train_images = torch.from_numpy(images).cuda()
+        train_labels = torch.from_numpy(labels).long().cuda()
 
 
-        prediction = cnn.eval(train_images.cuda())
+        prediction = cnn.eval(train_images)
         train_labels = train_labels.cuda()
-        train_accuracy = accuracy(prediction, train_labels)
+        train_accuracy = accuracy(prediction, torch.max(train_labels, 1)[1])
         train_out = loss(prediction, train_labels).item()
 
         train_acc.append(train_accuracy)
