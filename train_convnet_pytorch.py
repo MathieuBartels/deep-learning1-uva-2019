@@ -126,15 +126,15 @@ def train():
 
         del out
 
-        prediction = cnn.forward(images)
-        train_labels = torch.max(labels, 1)[1]
-        train_accuracy = accuracy(prediction, train_labels)
-        train_out = loss(prediction, train_labels).item()
-
-        # prediction = cnn.forward(train_images.cuda())
-        # train_labels = train_labels.cuda()
+        # prediction = cnn.forward(images)
+        # train_labels = torch.max(labels, 1)[1]
         # train_accuracy = accuracy(prediction, train_labels)
         # train_out = loss(prediction, train_labels).item()
+
+        prediction = cnn.forward(train_images.cuda())
+        train_labels = train_labels.cuda()
+        train_accuracy = accuracy(prediction, train_labels)
+        train_out = loss(prediction, train_labels).item()
 
         train_acc.append(train_accuracy)
         train_err.append(train_out)
