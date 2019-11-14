@@ -82,8 +82,8 @@ def train():
   train = cifar10['train']
 
   train_images, train_labels = train._images, train._labels
-  train_images = torch.from_numpy(train_images[:30000])
-  train_labels = torch.max(torch.from_numpy(train_labels).long(), 1)[1][:30000]
+  train_images = torch.from_numpy(train_images)
+  train_labels = torch.max(torch.from_numpy(train_labels).long(), 1)[1]
 
   test_images, test_labels = cifar10['test'].images, cifar10['test'].labels 
   test_images = torch.from_numpy(test_images)
@@ -126,12 +126,12 @@ def train():
 
         del out, images, labels
 
-        # prediction = cnn.forward(images)
-        # train_labels = torch.max(labels, 1)[1]
-        # train_accuracy = accuracy(prediction, train_labels)
-        # train_out = loss(prediction, train_labels).item()
+        # images, labels = train.next_batch(5000)
+        # images = torch.from_numpy(images).cuda()
+        # labels = torch.from_numpy(labels).long().cuda()
 
-        prediction = cnn.forward(train_images.cuda())
+
+        prediction = cnn.eval(train_images.cuda())
         train_labels = train_labels.cuda()
         train_accuracy = accuracy(prediction, train_labels)
         train_out = loss(prediction, train_labels).item()
@@ -141,7 +141,7 @@ def train():
         
         
 
-        prediction = cnn.forward(test_images.cuda())
+        prediction = cnn.eval(test_images.cuda())
         test_labels = test_labels.cuda()
         test_out = loss(prediction, test_labels).item()
         test_accuracy = accuracy(prediction, test_labels)
