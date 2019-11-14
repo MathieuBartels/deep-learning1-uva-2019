@@ -119,12 +119,13 @@ def train():
     out = loss(prediction, torch.max(labels, 1)[1])
     out.backward()
     optimizer.step()
-
+    
+    torch._cuda_emptyCache()
     with torch.no_grad():
       if not step % eval_freq:
         step_idx.append(step)
 
-        del out
+        del out, images, labels
 
         # prediction = cnn.forward(images)
         # train_labels = torch.max(labels, 1)[1]
@@ -139,7 +140,7 @@ def train():
         train_acc.append(train_accuracy)
         train_err.append(train_out)
         
-        torch._cuda_emptyCache()
+        
 
         prediction = cnn.forward(test_images.cuda())
         test_labels = test_labels.cuda()
