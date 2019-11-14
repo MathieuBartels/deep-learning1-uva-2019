@@ -82,8 +82,8 @@ def train():
   train = cifar10['train']
 
   train_images, train_labels = train._images, train._labels
-  train_images = torch.from_numpy(train_images)
-  train_labels = torch.max(torch.from_numpy(train_labels).long(), 1)[1]
+  train_images = torch.from_numpy(train_images[:30000])
+  train_labels = torch.max(torch.from_numpy(train_labels).long(), 1)[1][:30000]
 
   test_images, test_labels = cifar10['test'].images, cifar10['test'].labels 
   test_images = torch.from_numpy(test_images).cuda()
