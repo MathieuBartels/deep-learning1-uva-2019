@@ -86,8 +86,8 @@ def train():
   train_labels = torch.max(torch.from_numpy(train_labels).long(), 1)[1][:30000]
 
   test_images, test_labels = cifar10['test'].images, cifar10['test'].labels 
-  test_images = torch.from_numpy(test_images).cuda()
-  test_labels = torch.max(torch.from_numpy(test_labels).long(), 1)[1].cuda()
+  test_images = torch.from_numpy(test_images)
+  test_labels = torch.max(torch.from_numpy(test_labels).long(), 1)[1]
   
   #### NEURAL NET ######
   cnn = ConvNet(3, 10).cuda()
@@ -139,7 +139,10 @@ def train():
         train_acc.append(train_accuracy)
         train_err.append(train_out)
         
-        prediction = cnn.forward(test_images)
+        torch._cuda_emptyCache()
+
+        prediction = cnn.forward(test_images.cuda())
+        test_labels = test_labels.cuda()
         test_out = loss(prediction, test_labels).item()
         test_accuracy = accuracy(prediction, test_labels)
         
