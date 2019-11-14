@@ -131,7 +131,7 @@ def train():
         train_labels = torch.from_numpy(labels).long().cuda()
 
 
-        prediction = cnn.eval(train_images)
+        prediction = cnn.forward(train_images)
         train_labels = train_labels
         train_accuracy = accuracy(prediction, torch.max(train_labels, 1)[1])
         train_out = loss(prediction, train_labels).item()
@@ -141,7 +141,7 @@ def train():
         
         
 
-        prediction = cnn.eval(test_images.cuda())
+        prediction = cnn.forward(test_images.cuda())
         test_labels = test_labels.cuda()
         test_out = loss(prediction, test_labels).item()
         test_accuracy = accuracy(prediction, test_labels)
