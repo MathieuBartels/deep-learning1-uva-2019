@@ -132,8 +132,8 @@ def train():
 
 
         prediction = cnn.forward(train_images)
-        train_labels = train_labels
-        train_accuracy = accuracy(prediction, torch.max(train_labels, 1)[1])
+        train_labels =  torch.max(train_labels, 1)[1]
+        train_accuracy = accuracy(prediction, train_labels)
         train_out = loss(prediction, train_labels).item()
 
         train_acc.append(train_accuracy)
