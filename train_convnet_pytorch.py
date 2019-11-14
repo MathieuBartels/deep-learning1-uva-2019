@@ -120,7 +120,6 @@ def train():
     out.backward()
     optimizer.step()
     
-    torch._cuda_emptyCache()
     with torch.no_grad():
       if not step % eval_freq:
         step_idx.append(step)
