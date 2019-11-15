@@ -11,7 +11,7 @@ import numpy as np
 import os
 from mlp_pytorch import MLP
 import cifar10_utils
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 
 import torch.nn as nn
 import torch
