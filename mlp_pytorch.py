@@ -46,14 +46,14 @@ class MLP(nn.Module):
     super(MLP, self).__init__()
     self.network = nn.ModuleList([])
     for layer_length in n_hidden:
-      # self.network.append(nn.Dropout(0.5))
-      # self.network.append(nn.BatchNorm1d(n_inputs))
+      self.network.append(nn.Dropout(0.5))
+      self.network.append(nn.BatchNorm1d(n_inputs))
       self.network.append(nn.Linear(n_inputs, layer_length))
       self.network.append(nn.LeakyReLU(negative_slope=neg_slope))
       n_inputs = layer_length
     # self.network.append(nn.Dropout(0.2))
     self.network.append(nn.Linear(n_inputs, n_classes))
-    # self.network.apply(init_weights)
+    self.network.apply(init_weights)
     # self.network.append(nn.Softmax(dim=0))
     ########################
     # END OF YOUR CODE    #

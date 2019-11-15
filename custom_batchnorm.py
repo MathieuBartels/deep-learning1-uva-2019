@@ -123,7 +123,7 @@ class CustomBatchNormManualFunction(torch.autograd.Function):
     std = torch.var(input, unbiased=False,dim=0, keepdim=True)
     norm = (input - mean)/ torch.sqrt(std + eps)
     out = gamma * norm + beta
-    ctx.save_for_backward(std, out, gamma)
+    ctx.save_for_backward(torch.sqrt(std + eps), norm, gamma)
     ctx.input_shape = input.shape
     ctx.eps = eps
     ########################
@@ -155,14 +155,13 @@ class CustomBatchNormManualFunction(torch.autograd.Function):
     #######################
     grad_input, grad_gamma, grad_beta = None, None, None
     std, out, gamma = ctx.saved_tensors
-    size = ctx.input_shape
-    
+    b = ctx.input_shape[0]
     if ctx.needs_input_grad[0]:
-      grad_input = ??? #TODO
+      grad_input = ( gamma / (std *  b)) * (b *grad_output - grad_output.sum(0) - out * (grad_output * out).sum(0))
     if ctx.needs_input_grad[1]:
-      grad_gamma = torch.sum(out* grad_output,dim=0)
+      grad_gamma = (out* grad_output).sum(0)
     if ctx.needs_input_grad[2]:
-      grad_beta = grad_output
+      grad_beta = grad_output.sum(0)
       
     ########################
     # END OF YOUR CODE    #
@@ -201,7 +200,10 @@ class CustomBatchNormManualModule(nn.Module):
     ########################
     # PUT YOUR CODE HERE  #
     #######################
-
+    self.eps = eps
+    self.n_neurons = n_neurons
+    self.beta = nn.Parameter(torch.zeros(n_neurons))
+    self.gamma = nn.Parameter(torch.ones(n_neurons))
     ########################
     # END OF YOUR CODE    #
     #######################
@@ -224,7 +226,11 @@ class CustomBatchNormManualModule(nn.Module):
     ########################
     # PUT YOUR CODE HERE  #
     #######################
-    CustomBatchNormManualFunction
+    if input.shape[1] == self.n_neurons:
+      batchNormFunc = CustomBatchNormManualFunction()
+      out = batchNormFunc.apply(input, self.gamma, self.beta, self.eps)
+    else:
+      print('input shape not correct')
     ########################
     # END OF YOUR CODE    #
     #######################

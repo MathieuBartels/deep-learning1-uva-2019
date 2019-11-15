@@ -123,6 +123,7 @@ def train():
   #### Step ####
   for step in range(FLAGS.max_steps):
     optimizer.zero_grad()
+    mlp.train()
     ### data ####
     images, labels = train.next_batch(batch_size)
     images = torch.from_numpy(images.reshape(batch_size, feature_length)).cuda()
@@ -136,6 +137,7 @@ def train():
 
     with torch.no_grad():
       if not step % eval_freq:
+        mlp.eval()
         step_idx.append(step)
 
         # prediction = mlp.forward(images)
@@ -161,16 +163,21 @@ def train():
         test_err.append(test_out)
         print('train error: ', train_out, ' train accuracy: ', train_accuracy,
           ' validation error: ', test_out, ' validation accuracy: ', test_accuracy)
-  plt.figure(0)
-  plt.plot(step_idx, train_acc, label='train accuracy')
-  plt.plot(step_idx, test_acc, label='test accuracy')
-  plt.legend()
-  plt.title('Train and Test accuracy')
-  plt.figure(1)
-  plt.plot(step_idx, train_err, label='train error')
-  plt.plot(step_idx, test_err, label='test error')
-  plt.legend()
-  plt.title('Train and Test error')
+  print(step_idx)
+  print(train_acc)
+  print(train_err)
+  print(test_acc)
+  print(test_err)
+  # plt.figure(0)
+  # plt.plot(step_idx, train_acc, label='train accuracy')
+  # plt.plot(step_idx, test_acc, label='test accuracy')
+  # plt.legend()
+  # plt.title('Train and Test accuracy')
+  # plt.figure(1)
+  # plt.plot(step_idx, train_err, label='train error')
+  # plt.plot(step_idx, test_err, label='test error')
+  # plt.legend()
+  # plt.title('Train and Test error')
   
   plt.show()
   ########################
