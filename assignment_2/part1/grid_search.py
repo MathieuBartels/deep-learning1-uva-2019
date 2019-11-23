@@ -29,10 +29,10 @@ num_seeds = 5
 
 results = {'RNN': [], 'LSTM': []}
 
-for input_length in range(1,5,1):
+for input_length in range(1,25,1):
     config.input_length = input_length
     dataset = PalindromeDataset(config.input_length+1)
-    test_set_batch = 2000
+    test_set_batch = 4000
     data_loader = DataLoader(dataset, test_set_batch, num_workers=1)
     for batch_inputs, batch_targets in data_loader:
         batch_inputs = torch.nn.functional.one_hot(batch_inputs.to(torch.int64), 10).to(torch.double).to(device=device)
