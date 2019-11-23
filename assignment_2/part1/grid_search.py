@@ -24,12 +24,12 @@ class Config:
 input_length = 10
 device = 'cuda:0'
 
-config = Config(128, 10, input_length, 0.001, 10.0, 'RNN', 10, 128, 100, device=device)
+config = Config(1024, 10, input_length, 0.001, 10.0, 'RNN', 10, 128, 100, device=device)
 num_seeds = 5
 
 results = {'RNN': [], 'LSTM': []}
 
-for input_length in range(1,25,1):
+for input_length in range(1,30,1):
     config.input_length = input_length
     dataset = PalindromeDataset(config.input_length+1)
     test_set_batch = 4000

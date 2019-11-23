@@ -126,7 +126,7 @@ def train(config):
             #         accuracy, loss
             # ))
 
-        if step == config.train_steps:
+        if step == config.train_steps or accuracy == 1:
             # If you receive a PyTorch data-loader error, check this bug report:
             # https://github.com/pytorch/pytorch/pull/9655
             # writer.close()
