@@ -29,7 +29,7 @@ num_seeds = 10
 
 results = {'RNN': [], 'LSTM': []}
 
-for input_length in range(11,12,1):
+for input_length in range(1,40,1):
     if input_length > 10:
         config.learning_rate = 0.01
     config.input_length = input_length
