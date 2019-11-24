@@ -28,39 +28,43 @@ import torch
 import torch.optim as optim
 from torch.utils.data import DataLoader
 
-from part2.dataset import TextDataset
-from part2.model import TextGenerationModel
+from dataset import TextDataset
+from model import TextGenerationModel
 
 ################################################################################
+def calc_accuracy(predictions, targets):
+    predicted = torch.max(predictions, 1)[1]
+    return (predicted == targets).sum().item()/ targets.nelement()
 
 def train(config):
 
     # Initialize the device which to run the model on
     device = torch.device(config.device)
 
-    # Initialize the model that we are going to use
-    model = TextGenerationModel( ... )  # fixme
-
     # Initialize the dataset and data loader (note the +1)
-    dataset = TextDataset( ... )  # fixme
+    dataset = TextDataset(config.txt_file, config.seq_length + 1)  # fixme
     data_loader = DataLoader(dataset, config.batch_size, num_workers=1)
 
+    # Initialize the model that we are going to use
+    model = TextGenerationModel(config.batch_size, config.seq_length, dataset.vocab_size,
+                 lstm_num_hidden=256, lstm_num_layers=2, device='cuda:0').to(device)  # fixme
+
     # Setup the loss and optimizer
-    criterion = None  # fixme
-    optimizer = None  # fixme
+    criterion = torch.nn.CrossEntropyLoss() # fixme
+    optimizer = torch.optim.Adam(model.parameters(), lr=config.learning_rate, )  # fixme
 
     for step, (batch_inputs, batch_targets) in enumerate(data_loader):
-
         # Only for time measurement of step through network
         t1 = time.time()
 
         #######################################################
         # Add more code here ...
         #######################################################
-
-        loss = np.inf   # fixme
-        accuracy = 0.0  # fixme
-
+        batch_inputs = torch.nn.functional.one_hot(batch_inputs.to(torch.int64), dataset.vocab_size).to(torch.float).to(device=device)
+        batch_targets = batch_targets.to(device)
+        out = model.forward(batch_inputs).permute(0, 2, 1)
+        loss = criterion(out, batch_targets)   # fixme
+        accuracy = calc_accuracy(out, batch_targets)  # fixme
         # Just for time measurement
         t2 = time.time()
         examples_per_second = config.batch_size/float(t2-t1)
@@ -70,17 +74,18 @@ def train(config):
             print("[{}] Train Step {:04d}/{:04d}, Batch Size = {}, Examples/Sec = {:.2f}, "
                   "Accuracy = {:.2f}, Loss = {:.3f}".format(
                     datetime.now().strftime("%Y-%m-%d %H:%M"), step,
-                    config.train_steps, config.batch_size, examples_per_second,
+                    int(config.train_steps), config.batch_size, examples_per_second,
                     accuracy, loss
             ))
 
-        if step == config.sample_every:
+        if step % config.sample_every:
             # Generate some sentences by sampling from the model
             pass
 
         if step == config.train_steps:
             # If you receive a PyTorch data-loader error, check this bug report:
             # https://github.com/pytorch/pytorch/pull/9655
+            print("step is trainsteps")
             break
 
     print('Done training.')
@@ -99,6 +104,7 @@ if __name__ == "__main__":
     parser.add_argument('--seq_length', type=int, default=30, help='Length of an input sequence')
     parser.add_argument('--lstm_num_hidden', type=int, default=128, help='Number of hidden units in the LSTM')
     parser.add_argument('--lstm_num_layers', type=int, default=2, help='Number of LSTM layers in the model')
+    parser.add_argument('--device', type=str, default="cuda:0", help="Training device 'cpu' or 'cuda:0'")
 
     # Training params
     parser.add_argument('--batch_size', type=int, default=64, help='Number of examples to process in a batch')

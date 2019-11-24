@@ -26,10 +26,12 @@ class TextGenerationModel(nn.Module):
                  lstm_num_hidden=256, lstm_num_layers=2, device='cuda:0'):
 
         super(TextGenerationModel, self).__init__()
-        self.lstm = nn.LSTM(vocabulary_size, lstm_num_hidden, lstm_num_layers)
+        self.lstm = nn.LSTM(input_size=vocabulary_size, hidden_size=lstm_num_hidden, num_layers=lstm_num_layers, dropout=0.10, batch_first=True)
+        self.linear = nn.Linear(lstm_num_hidden, vocabulary_size)
         self.batch_size = batch_size
         self.seq_length = seq_length
 
     def forward(self, x):
-        # Implementation here...
-        pass
+        lsout, _ = self.lstm(x)
+        linout = self.linear(lsout)
+        return linout
