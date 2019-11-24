@@ -86,7 +86,7 @@ def train(config):
 
     # Setup the loss and optimizer
     criterion = torch.nn.CrossEntropyLoss() # fixme
-    optimizer = torch.optim.RMSprop(model.parameters(), lr=config.learning_rate)  # fixme
+    optimizer = torch.optim.Adam(model.parameters(), lr=config.learning_rate)  # fixme
 
     for step, (batch_inputs, batch_targets) in enumerate(data_loader):
 

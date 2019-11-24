@@ -24,12 +24,12 @@ class Config:
 input_length = 10
 device = 'cuda:0'
 
-config = Config(1024, 10, input_length, 0.001, 10.0, 'RNN', 10, 128, 100, device=device)
+config = Config(2048, 10, input_length, 0.001, 10.0, 'RNN', 10, 128, 100, device=device)
 num_seeds = 10
 
 results = {'RNN': [], 'LSTM': []}
 
-for input_length in range(1,40,1):
+for input_length in range(11,12,1):
     if input_length > 10:
         config.learning_rate = 0.01
     config.input_length = input_length
