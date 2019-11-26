@@ -37,7 +37,7 @@ class LSTM(nn.Module):
 
         self.wfh = nn.Parameter(torch.zeros((num_hidden, num_hidden), dtype=torch.double))
         self.wfx = nn.Parameter(torch.zeros((input_dim, num_hidden), dtype=torch.double))
-        self.bf = nn.Parameter(torch.zeros((num_hidden), dtype=torch.double))
+        self.bf = nn.Parameter(torch.ones((num_hidden), dtype=torch.double))
 
         self.woh = nn.Parameter(torch.zeros((num_hidden, num_hidden), dtype=torch.double))
         self.wox = nn.Parameter(torch.zeros((input_dim, num_hidden), dtype=torch.double))
@@ -74,6 +74,8 @@ class LSTM(nn.Module):
         sig1 = nn.Sigmoid()
         sig2 = nn.Sigmoid()
         
+        # h, and save grad
+
         h_prev = self.h
         c_prev = self.c
         for t in range(self.sequence_length):

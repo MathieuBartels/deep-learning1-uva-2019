@@ -3,6 +3,11 @@ data = {'RNN': [{1: 1.0}, {2: 1.0}, {3: 1.0}, {4: 1.0}, {5: 1.0}, {6: 0.9999}, {
 
 y_lstm = [(data['LSTM'][i][i+1]) for i in range(0,24,1)]
 y_rnn = [(data['RNN'][i][i+1]) for i in range(0,24,1)]
-plt.plot(list(range(0,24,1)), y_lstm)
-plt.plot(list(range(0,24,1)), y_rnn)
+fig = plt.figure()
+plt.plot(list(range(0,24,1)), y_lstm, label="lstm")
+plt.plot(list(range(0,24,1)), y_rnn, label="rnn")
+plt.title('RNN vs LSTM accuracy')
+plt.ylabel('accuracy')
+plt.xlabel('palindrome length')
+plt.legend()
 plt.show()

@@ -88,6 +88,9 @@ def train(config):
     criterion = torch.nn.CrossEntropyLoss() # fixme
     optimizer = torch.optim.Adam(model.parameters(), lr=config.learning_rate)  # fixme
 
+    accs = []
+    maxacc = 0 
+    st = 0
     for step, (batch_inputs, batch_targets) in enumerate(data_loader):
 
         # Only for time measurement of step through network
@@ -112,7 +115,7 @@ def train(config):
         # Just for time measurement
         t2 = time.time()
         examples_per_second = config.batch_size/float(t2-t1)
-
+        
         # if step % 10 == 0:
             # writer.add_scalar('Loss/train', loss, step)
             # writer.add_scalar('Loss/test/'+ str(config.input_length), loss, step)
@@ -126,12 +129,12 @@ def train(config):
             #         accuracy, loss
             # ))
 
-        if step == config.train_steps or accuracy == 1:
+        
+        if step == config.train_steps or accuracy==1:
             # If you receive a PyTorch data-loader error, check this bug report:
             # https://github.com/pytorch/pytorch/pull/9655
             # writer.close()
             break
-
     # print('Done training.')
     return model
 

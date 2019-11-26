@@ -29,6 +29,8 @@ class TextGenerationModel(nn.Module):
         self.lstm = nn.LSTM(input_size=vocabulary_size, hidden_size=lstm_num_hidden, num_layers=lstm_num_layers, dropout=0.10, batch_first=True)
         self.linear = nn.Linear(lstm_num_hidden, vocabulary_size)
         self.batch_size = batch_size
+        self.lstm_num_hidden = lstm_num_hidden
+        self.lstm_num_layers = lstm_num_layers
         self.seq_length = seq_length
 
     def forward(self, x):

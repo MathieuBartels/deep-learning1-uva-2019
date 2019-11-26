@@ -21,7 +21,7 @@ import os
 import numpy as np
 import torch.utils.data as data
 import torch
-
+import re
 
 class TextDataset(data.Dataset):
 
@@ -29,6 +29,7 @@ class TextDataset(data.Dataset):
         assert os.path.splitext(filename)[1] == ".txt"
         self._seq_length = seq_length
         self._data = open(filename, 'r').read()
+        self._data = [re.sub('[^A-Za-z0-9 ]+', '', line.replace("\n", " ")) for line in self._data]
         self._chars = list(set(self._data))
         self._data_size, self._vocab_size = len(self._data), len(self._chars)
         print("Initialize dataset with {} characters, {} unique.".format(

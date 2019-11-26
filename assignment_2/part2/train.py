@@ -31,10 +31,34 @@ from torch.utils.data import DataLoader
 from dataset import TextDataset
 from model import TextGenerationModel
 
+from random import randint
 ################################################################################
 def calc_accuracy(predictions, targets):
-    predicted = torch.max(predictions, 1)[1]
-    return (predicted == targets).sum().item()/ targets.nelement()
+    predicted = torch.max(predictions, 1)[1][:,-1]
+    targets = targets[:,-1]
+    accuracy = (predicted == targets).sum().item()/ targets.nelement()
+    return accuracy
+
+def generate(model, n, seq_length, vocab_size, device):
+    model.eval()
+    letter = randint(0, vocab_size-1)
+    sent = [letter]
+    for _ in range(n):
+        torch_sent = torch.nn.functional.one_hot(torch.from_numpy(np.array(sent[-seq_length:])).to(torch.int64), vocab_size).to(torch.float).to(device=device)
+        out = model(torch.unsqueeze(torch_sent,0))
+        sent.append(int(torch.argmax(out[0,-1,:])))
+    model.train()
+    return sent
+
+def finish_sentence(model, n, vocab_size, device, start)
+    model.eval()
+    sent = start
+    for _ in range(n):
+        torch_sent = torch.nn.functional.one_hot(torch.from_numpy(np.array(sent[-seq_length])).to(torch.int64), vocab_size).to(torch.float).to(device=device)
+        out = model(torch.unsqueeze(torch_sent,0))
+        sent.append(int(torch.argmax(out[0,-1,:])))
+    model.train()
+    return sent
 
 def train(config):
 
@@ -51,7 +75,8 @@ def train(config):
 
     # Setup the loss and optimizer
     criterion = torch.nn.CrossEntropyLoss() # fixme
-    optimizer = torch.optim.Adam(model.parameters(), lr=config.learning_rate, )  # fixme
+    optimizer = torch.optim.RMSprop(model.parameters(), lr=config.learning_rate, alpha=0.99, eps=1e-08, weight_decay=0, momentum=0, centered=False)  # fixme
+    optimizer = torch.optim.Adam(model.parameters(), lr=config.learning_rate)  # fixme
 
     for step, (batch_inputs, batch_targets) in enumerate(data_loader):
         # Only for time measurement of step through network
@@ -60,17 +85,21 @@ def train(config):
         #######################################################
         # Add more code here ...
         #######################################################
+        optimizer.zero_grad()
         batch_inputs = torch.nn.functional.one_hot(batch_inputs.to(torch.int64), dataset.vocab_size).to(torch.float).to(device=device)
         batch_targets = batch_targets.to(device)
         out = model.forward(batch_inputs).permute(0, 2, 1)
         loss = criterion(out, batch_targets)   # fixme
         accuracy = calc_accuracy(out, batch_targets)  # fixme
+
+        loss.backward()
+        optimizer.step()
         # Just for time measurement
         t2 = time.time()
         examples_per_second = config.batch_size/float(t2-t1)
-
         if step % config.print_every == 0:
-
+            # print("pred", dataset.convert_to_string(torch.max(out, 1)[1][0].cpu().numpy()))
+            # print("real", dataset.convert_to_string(batch_targets[0].cpu().numpy()))
             print("[{}] Train Step {:04d}/{:04d}, Batch Size = {}, Examples/Sec = {:.2f}, "
                   "Accuracy = {:.2f}, Loss = {:.3f}".format(
                     datetime.now().strftime("%Y-%m-%d %H:%M"), step,
@@ -78,10 +107,10 @@ def train(config):
                     accuracy, loss
             ))
 
-        if step % config.sample_every:
+        if step % config.sample_every == 0:
             # Generate some sentences by sampling from the model
-            pass
-
+            sent = generate(model, 200, config.seq_length, dataset.vocab_size, config.device)
+            print("generated sentence", dataset.convert_to_string(sent))
         if step == config.train_steps:
             # If you receive a PyTorch data-loader error, check this bug report:
             # https://github.com/pytorch/pytorch/pull/9655
@@ -108,7 +137,7 @@ if __name__ == "__main__":
 
     # Training params
     parser.add_argument('--batch_size', type=int, default=64, help='Number of examples to process in a batch')
-    parser.add_argument('--learning_rate', type=float, default=2e-3, help='Learning rate')
+    parser.add_argument('--learning_rate', type=float, default=2e-2, help='Learning rate')
 
     # It is not necessary to implement the following three params, but it may help training.
     parser.add_argument('--learning_rate_decay', type=float, default=0.96, help='Learning rate decay fraction')
