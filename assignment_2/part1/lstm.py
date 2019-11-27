@@ -50,6 +50,8 @@ class LSTM(nn.Module):
 
         self.h = torch.zeros((num_hidden), dtype=torch.double).to(device)
         self.c = torch.zeros((num_hidden), dtype=torch.double).to(device)
+        # self.h_list = []
+        
 
         torch.nn.init.xavier_uniform_(self.wgh)
         torch.nn.init.xavier_uniform_(self.wgx)
@@ -85,7 +87,8 @@ class LSTM(nn.Module):
             ot = sig2(x[:, t] @ self.wox + h_prev @ self.woh + self.bo)
             ct = gt * it + c_prev * ft
             ht = tan1(ct) * ot
-
+            # ht.retain_grad()
+            # self.h_list.append(ht)
             c_prev = ct
             h_prev = ht
             

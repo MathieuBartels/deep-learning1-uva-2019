@@ -26,7 +26,7 @@ class TextGenerationModel(nn.Module):
                  lstm_num_hidden=256, lstm_num_layers=2, device='cuda:0'):
 
         super(TextGenerationModel, self).__init__()
-        self.lstm = nn.LSTM(input_size=vocabulary_size, hidden_size=lstm_num_hidden, num_layers=lstm_num_layers, dropout=0.10, batch_first=True)
+        self.lstm = nn.LSTM(input_size=vocabulary_size, hidden_size=lstm_num_hidden, num_layers=lstm_num_layers, batch_first=True)
         self.linear = nn.Linear(lstm_num_hidden, vocabulary_size)
         self.batch_size = batch_size
         self.lstm_num_hidden = lstm_num_hidden

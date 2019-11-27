@@ -22,6 +22,7 @@ import argparse
 import time
 from datetime import datetime
 import numpy as np
+import matplotlib.pyplot as plt
 
 import torch
 from torch.utils.data import DataLoader
@@ -31,7 +32,7 @@ from vanilla_rnn import VanillaRNN
 from lstm import LSTM
 
 # You may want to look into tensorboard for logging
-# from torch.utils.tensorboard import SummaryWriter
+from torch.utils.tensorboard import SummaryWriter
 
 ################################################################################
 def calc_accuracy(predictions, targets):
@@ -73,7 +74,7 @@ def train(config):
     device = torch.device(config.device)
 
     # print(config)
-    # writer = SummaryWriter('runs/')
+    writer = SummaryWriter('runs/')
     # Initialize the model that we are going to use
     if config.model_type == 'RNN':
         model = VanillaRNN(config.input_length, config.input_dim, config.num_hidden, config.num_classes, device).to(device=device)
@@ -117,17 +118,17 @@ def train(config):
         examples_per_second = config.batch_size/float(t2-t1)
         
         # if step % 10 == 0:
-            # writer.add_scalar('Loss/train', loss, step)
-            # writer.add_scalar('Loss/test/'+ str(config.input_length), loss, step)
-            # writer.add_scalar('Accuracy/train', accuracy, step)
-            # writer.add_scalar('Accuracy/test/' + str(config.input_length), accuracy, step)
+        #     writer.add_scalar('Loss/train', loss, step)
+        #     writer.add_scalar('Loss/test/'+ str(config.input_length), loss, step)
+        #     writer.add_scalar('Accuracy/train', accuracy, step)
+        #     writer.add_scalar('Accuracy/test/' + str(config.input_length), accuracy, step)
 
-            # print("[{}] Train Step {:04d}/{:04d}, Batch Size = {}, Examples/Sec = {:.2f}, "
-            #       "Accuracy = {:.2f}, Loss = {:.3f}".format(
-            #         datetime.now().strftime("%Y-%m-%d %H:%M"), step,
-            #         config.train_steps, config.batch_size, examples_per_second,
-            #         accuracy, loss
-            # ))
+        #     print("[{}] Train Step {:04d}/{:04d}, Batch Size = {}, Examples/Sec = {:.2f}, "
+        #           "Accuracy = {:.2f}, Loss = {:.3f}".format(
+        #             datetime.now().strftime("%Y-%m-%d %H:%M"), step,
+        #             config.train_steps, config.batch_size, examples_per_second,
+        #             accuracy, loss
+        #     ))
 
         
         if step == config.train_steps or accuracy==1:
@@ -135,7 +136,7 @@ def train(config):
             # https://github.com/pytorch/pytorch/pull/9655
             # writer.close()
             break
-    # print('Done training.')
+    print('Done training.')
     return model
 
 
@@ -158,6 +159,7 @@ if __name__ == "__main__":
     parser.add_argument('--train_steps', type=int, default=10000, help='Number of training steps')
     parser.add_argument('--max_norm', type=float, default=10.0)
     parser.add_argument('--device', type=str, default="cuda:0", help="Training device 'cpu' or 'cuda:0'")
+    parser.add_argument('--grad_plot', type=bool, default=False, help="plot gradient of models")
 
     config = parser.parse_args()
 

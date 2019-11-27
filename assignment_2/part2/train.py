@@ -34,8 +34,8 @@ from model import TextGenerationModel
 from random import randint
 ################################################################################
 def calc_accuracy(predictions, targets):
-    predicted = torch.max(predictions, 1)[1][:,-1]
-    targets = targets[:,-1]
+    predicted = torch.max(predictions, 1)[1]
+    targets = targets
     accuracy = (predicted == targets).sum().item()/ targets.nelement()
     return accuracy
 
@@ -50,11 +50,12 @@ def generate(model, n, seq_length, vocab_size, device):
     model.train()
     return sent
 
-def finish_sentence(model, n, vocab_size, device, start)
+def finish_sentence(model, n, seq_length, vocab_size, device, start):
+    
     model.eval()
     sent = start
     for _ in range(n):
-        torch_sent = torch.nn.functional.one_hot(torch.from_numpy(np.array(sent[-seq_length])).to(torch.int64), vocab_size).to(torch.float).to(device=device)
+        torch_sent = torch.nn.functional.one_hot(torch.from_numpy(np.array(sent[-seq_length:])).to(torch.int64), vocab_size).to(torch.float).to(device=device)
         out = model(torch.unsqueeze(torch_sent,0))
         sent.append(int(torch.argmax(out[0,-1,:])))
     model.train()
@@ -75,7 +76,7 @@ def train(config):
 
     # Setup the loss and optimizer
     criterion = torch.nn.CrossEntropyLoss() # fixme
-    optimizer = torch.optim.RMSprop(model.parameters(), lr=config.learning_rate, alpha=0.99, eps=1e-08, weight_decay=0, momentum=0, centered=False)  # fixme
+    # optimizer = torch.optim.RMSprop(model.parameters(), lr=config.learning_rate)  # fixme
     optimizer = torch.optim.Adam(model.parameters(), lr=config.learning_rate)  # fixme
 
     for step, (batch_inputs, batch_targets) in enumerate(data_loader):
@@ -111,6 +112,9 @@ def train(config):
             # Generate some sentences by sampling from the model
             sent = generate(model, 200, config.seq_length, dataset.vocab_size, config.device)
             print("generated sentence", dataset.convert_to_string(sent))
+
+            finish_sent = finish_sentence(model, 50, config.seq_length, dataset.vocab_size, device, dataset.convert_to_int_array("David"))
+            print("finished sentence", dataset.convert_to_string(finish_sent))
         if step == config.train_steps:
             # If you receive a PyTorch data-loader error, check this bug report:
             # https://github.com/pytorch/pytorch/pull/9655
