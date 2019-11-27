@@ -24,7 +24,7 @@ class Config:
 input_length = 10
 device = 'cuda:0'
 
-config = Config(1024, 10, input_length, 0.001, 10.0, 'RNN', 10, 128, 100, device=device)
+config = Config(512, 10, input_length, 0.001, 10.0, 'RNN', 10, 128, 100, device=device)
 num_seeds = 5
 
 results = {'RNN': [], 'LSTM': []}

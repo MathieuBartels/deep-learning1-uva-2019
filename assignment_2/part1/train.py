@@ -89,9 +89,6 @@ def train(config):
     criterion = torch.nn.CrossEntropyLoss() # fixme
     optimizer = torch.optim.Adam(model.parameters(), lr=config.learning_rate)  # fixme
 
-    accs = []
-    maxacc = 0 
-    st = 0
     for step, (batch_inputs, batch_targets) in enumerate(data_loader):
 
         # Only for time measurement of step through network
