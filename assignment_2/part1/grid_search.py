@@ -30,8 +30,7 @@ num_seeds = 5
 results = {'RNN': [], 'LSTM': []}
 
 for input_length in range(1,25,1):
-    if input_length > 10:
-        config.learning_rate = 0.01
+    config.learning_rate = 0.001 *input_length
     config.input_length = input_length
     dataset = PalindromeDataset(config.input_length+1)
     test_set_batch = 2000
@@ -40,8 +39,6 @@ for input_length in range(1,25,1):
         batch_inputs = torch.nn.functional.one_hot(batch_inputs.to(torch.int64), 10).to(torch.double).to(device=device)
         batch_targets = batch_targets.to(device)
         for model_type in ['RNN', 'LSTM']:
-            if model_type == 'LSTM':
-                config.learning_rate = config.learning_rate/10
             config.model_type = model_type
             acc = []
             for i in range(num_seeds):
@@ -51,8 +48,6 @@ for input_length in range(1,25,1):
                 out = model.forward(batch_inputs.to(device))
                 acc.append(calc_accuracy(out, batch_targets))
             results[model_type].append({input_length: np.mean(acc)})
-            if model_type == 'LSTM':
-                config.learning_rate = config.learning_rate*10
             # print(model_type, input_length, np.mean(acc))
         break
 print(results)

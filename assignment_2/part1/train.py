@@ -114,18 +114,18 @@ def train(config):
         t2 = time.time()
         examples_per_second = config.batch_size/float(t2-t1)
         
-        # if step % 10 == 0:
+        if step % 10 == 0:
         #     writer.add_scalar('Loss/train', loss, step)
         #     writer.add_scalar('Loss/test/'+ str(config.input_length), loss, step)
         #     writer.add_scalar('Accuracy/train', accuracy, step)
         #     writer.add_scalar('Accuracy/test/' + str(config.input_length), accuracy, step)
 
-        #     print("[{}] Train Step {:04d}/{:04d}, Batch Size = {}, Examples/Sec = {:.2f}, "
-        #           "Accuracy = {:.2f}, Loss = {:.3f}".format(
-        #             datetime.now().strftime("%Y-%m-%d %H:%M"), step,
-        #             config.train_steps, config.batch_size, examples_per_second,
-        #             accuracy, loss
-        #     ))
+            print("[{}] Train Step {:04d}/{:04d}, Batch Size = {}, Examples/Sec = {:.2f}, "
+                  "Accuracy = {:.2f}, Loss = {:.3f}".format(
+                    datetime.now().strftime("%Y-%m-%d %H:%M"), step,
+                    config.train_steps, config.batch_size, examples_per_second,
+                    accuracy, loss
+            ))
 
         
         if step == config.train_steps or accuracy==1:

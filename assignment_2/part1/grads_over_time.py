@@ -54,11 +54,13 @@ for model in [Vanilla, lstm]:
         gradlist = [] 
         for h in model.h_list:
             gradlist.append(torch.norm(h.grad))
+        gradlist = list(torch.tensor(gradlist)/sum(gradlist))
         gradients.append(gradlist)
         break
 
-plt.plot(gradients[0], label="RNN")
-plt.plot(gradients[1], label="LSTM")
+plt.plot(list(range(len(gradients[0]))), gradients[0], label="RNN")
+gradients[1].reverse()
+plt.plot(list(range(len(gradients[1]))), gradients[1], label="LSTM")
 plt.title('RNN vs LSTM gradients')
 plt.ylabel('Gradient magnitude')
 plt.xlabel('timestep')
