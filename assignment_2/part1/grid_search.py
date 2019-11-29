@@ -29,7 +29,7 @@ num_seeds = 5
 
 results = {'RNN': [], 'LSTM': []}
 
-for input_length in range(1,25,1):
+for input_length in [5,10,15,20,25,30,35]:
     config.learning_rate = 0.001 *input_length
     config.input_length = input_length
     dataset = PalindromeDataset(config.input_length+1)
