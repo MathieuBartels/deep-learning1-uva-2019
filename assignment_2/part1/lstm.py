@@ -50,45 +50,40 @@ class LSTM(nn.Module):
 
         self.h = torch.zeros((num_hidden), dtype=torch.double).to(device)
         self.c = torch.zeros((num_hidden), dtype=torch.double).to(device)
-        # self.h_list = []
+        self.h_list = []
         
 
-        torch.nn.init.xavier_uniform_(self.wgh)
-        torch.nn.init.xavier_uniform_(self.wgx)
+        torch.nn.init.kaiming_uniform_(self.wgh)
+        torch.nn.init.kaiming_uniform_(self.wgx)
 
-        torch.nn.init.xavier_uniform_(self.wih)
-        torch.nn.init.xavier_uniform_(self.wix)
+        torch.nn.init.kaiming_uniform_(self.wih)
+        torch.nn.init.kaiming_uniform_(self.wix)
         
-        torch.nn.init.xavier_uniform_(self.wfh)
-        torch.nn.init.xavier_uniform_(self.wfx)
+        torch.nn.init.kaiming_uniform_(self.wfh)
+        torch.nn.init.kaiming_uniform_(self.wfx)
 
-        torch.nn.init.xavier_uniform_(self.woh)
-        torch.nn.init.xavier_uniform_(self.wox)
+        torch.nn.init.kaiming_uniform_(self.woh)
+        torch.nn.init.kaiming_uniform_(self.wox)
 
-        torch.nn.init.xavier_uniform_(self.wph)
+        torch.nn.init.kaiming_uniform_(self.wph)
         
 
     def forward(self, x):
         # Implementation here ...
-        tan = nn.Tanh()
-        tan1 = nn.Tanh()        
-        sig = nn.Sigmoid()
-        sig1 = nn.Sigmoid()
-        sig2 = nn.Sigmoid()
-        
         # h, and save grad
 
         h_prev = self.h
         c_prev = self.c
+        self.h_list = []
         for t in range(self.sequence_length):
-            gt = tan(x[:, t] @ self.wgx + h_prev @ self.wgh + self.bg)
-            it = sig(x[:, t] @ self.wix + h_prev @ self.wih + self.bi)
-            ft = sig1(x[:, t] @ self.wfx + h_prev @ self.wfh + self.bf)
-            ot = sig2(x[:, t] @ self.wox + h_prev @ self.woh + self.bo)
+            gt = (x[:, t] @ self.wgx + h_prev @ self.wgh + self.bg).tanh()
+            it = (x[:, t] @ self.wix + h_prev @ self.wih + self.bi).sigmoid()
+            ft = (x[:, t] @ self.wfx + h_prev @ self.wfh + self.bf).sigmoid()
+            ot = (x[:, t] @ self.wox + h_prev @ self.woh + self.bo).sigmoid()
             ct = gt * it + c_prev * ft
-            ht = tan1(ct) * ot
-            # ht.retain_grad()
-            # self.h_list.append(ht)
+            ht = (ct).tanh() * ot
+            ht.retain_grad()
+            self.h_list.append(ht)
             c_prev = ct
             h_prev = ht
             

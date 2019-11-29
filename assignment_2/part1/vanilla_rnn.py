@@ -45,13 +45,12 @@ class VanillaRNN(nn.Module):
         torch.nn.init.xavier_uniform_(self.wph)
 
     def forward(self, x):
-        
+        self.h_list = []
         h_prev = self.h
-        tan = nn.Tanh()
         for t in range(self.sequence_length):
-            ht = tan(x[:, t] @ self.whx + h_prev @ self.whh.T + self.bh)
-            # ht.retain_grad()
-            # self.h_list.append(ht)
+            ht = (x[:, t] @ self.whx + h_prev @ self.whh.T + self.bh).tanh()
+            ht.retain_grad()
+            self.h_list.append(ht)
             h_prev = ht
         p = ht @ self.wph  + self.bp
         return p
