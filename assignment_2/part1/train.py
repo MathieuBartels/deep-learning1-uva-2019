@@ -24,12 +24,16 @@ from datetime import datetime
 import numpy as np
 # import matplotlib.pyplot as plt
 
+import sys
+sys.path.append("..")
+sys.path.append(".")
+
 import torch
 from torch.utils.data import DataLoader
 
-from dataset import PalindromeDataset
-from vanilla_rnn import VanillaRNN
-from lstm import LSTM
+from part1.dataset import PalindromeDataset
+from part1.vanilla_rnn import VanillaRNN
+from part1.lstm import LSTM
 
 # You may want to look into tensorboard for logging
 from torch.utils.tensorboard import SummaryWriter

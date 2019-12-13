@@ -22,6 +22,10 @@ import time
 from datetime import datetime
 import argparse
 
+import sys
+sys.path.append("..")
+sys.path.append(".")
+
 import numpy as np
 
 import torch
@@ -29,8 +33,8 @@ import torch.optim as optim
 from torch.utils.data import DataLoader
 import matplotlib.pyplot as plt
 
-from dataset import TextDataset
-from model import TextGenerationModel
+from part2.dataset import TextDataset
+from part2.model import TextGenerationModel
 
 from random import randint
 ################################################################################

@@ -3,8 +3,11 @@ from __future__ import division
 from __future__ import print_function
 
 import torch
+import sys
+sys.path.append("..")
+sys.path.append(".")
 from torch.utils.data import DataLoader
-from dataset import PalindromeDataset
+from part1.dataset import PalindromeDataset
 from train import train, calc_accuracy
 import numpy as np
 
@@ -33,7 +36,7 @@ for input_length in [5,10,15,20,25,30,35]:
     config.learning_rate = 0.001 *input_length
     config.input_length = input_length
     dataset = PalindromeDataset(config.input_length+1)
-    test_set_batch = 2000
+    test_set_batch = 2000   
     data_loader = DataLoader(dataset, test_set_batch, num_workers=1)
     for batch_inputs, batch_targets in data_loader:
         batch_inputs = torch.nn.functional.one_hot(batch_inputs.to(torch.int64), 10).to(torch.double).to(device=device)
