@@ -1,0 +1,6 @@
+ERROR: Unable to locate a modulefile for 'eb'
+usage: a3_gan_template.py [-h] [--n_epochs N_EPOCHS] [--batch_size BATCH_SIZE]
+                          [--lr LR] [--latent_dim LATENT_DIM]
+                          [--save_interval SAVE_INTERVAL]
+a3_gan_template.py: error: unrecognized arguments: -cuda
+srun: error: r30n7: task 0: Exited with exit code 2
